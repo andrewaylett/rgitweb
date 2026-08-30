@@ -1,0 +1,61 @@
+repos:
+- repo: https://github.com/andrewaylett/pre-commit-hooks
+  rev: v0.6.2
+  hooks:
+  - id: init-hooks
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v5.0.0
+  hooks:
+  - id: trailing-whitespace
+  - id: end-of-file-fixer
+  - id: check-case-conflict
+  - id: check-merge-conflict
+  - id: check-yaml
+  - id: check-toml
+  - id: check-json
+  - id: forbid-submodules
+  - id: mixed-line-ending
+  - id: check-added-large-files
+  - id: pretty-format-json
+    args: [--autofix, --indent, '2']
+    exclude: ^(package\.json|package-lock\.json)$
+  - id: check-xml
+- repo: https://github.com/google/yamlfmt
+  rev: v0.17.2
+  hooks:
+  - id: yamlfmt
+- repo: https://github.com/editorconfig-checker/editorconfig-checker.python
+  rev: 3.2.1
+  hooks:
+  - id: editorconfig-checker
+    exclude: ^(package-lock\.json|LICENSE)$
+- repo: local
+  hooks:
+  - id: npm-dedupe
+    name: npm dedupe
+    entry: npm dedupe
+    language: system
+    pass_filenames: false
+    files: ^package(-lock)?\.json$
+  - id: lint
+    name: eslint
+    entry: npm run lint:fix
+    language: system
+    pass_filenames: false
+    files: \.(ts|tsx|js|jsx|mjs)$
+  - id: test
+    name: jest
+    entry: npm test
+    language: system
+    pass_filenames: false
+    files: \.(ts|tsx|js|jsx|mjs|json)$
+- repo: https://github.com/python-jsonschema/check-jsonschema
+  rev: 0.33.2
+  hooks:
+  - id: check-renovate
+- repo: https://github.com/renovatebot/pre-commit-hooks
+  rev: 41.23.5
+  hooks:
+  - id: renovate-config-validator
+    args:
+    - --strict
