@@ -1,0 +1,72 @@
+name: Deploy example site
+
+# Builds rgitweb and deploys it to GitHub Pages pointed at a copy of this
+# repository's own history, so the demo has a repository it can browse
+# without depending on a third-party host sending the right CORS headers.
+
+on:
+  push:
+    branches:
+    - main
+  workflow_dispatch:
+
+# This target assumes a GitHub Pages project site with no custom domain, and
+# that the repo's Pages source is set to "GitHub Actions" (Settings > Pages)
+# -- the workflow can't set that itself, so the first run fails until it is.
+permissions:
+  contents: read
+  actions: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  # A cancelled Pages deployment can leave the site mid-update; let each run
+  # finish and queue behind it instead.
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+      with:
+        fetch-depth: 0
+        # Otherwise checkout embeds a short-lived GITHUB_TOKEN in .git/config,
+        # which the next step publishes to a public URL.
+        persist-credentials: false
+    - uses: actions/setup-node@v5
+      with:
+        node-version-file: .tool-versions
+        cache: npm
+    - run: npm ci
+    - name: Compute this deployment's Pages URL
+      id: repo-url
+      run: |
+        echo "url=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}" >> "$GITHUB_OUTPUT"
+    - name: Build site
+      env:
+        VITE_FEATURED_REPOS: >-
+          [{"name": "rgitweb (this site's own history)", "url": "${{ steps.repo-url.outputs.url }}/git"}]
+      run: npm run build
+    - name: Publish this repository's history as a dumb-HTTP repo
+      run: |
+        cp -r .git dist/git
+        git --git-dir=dist/git update-server-info
+        # None of these are read by the dumb-HTTP layout; drop them so
+        # there's nothing but the repo data itself at a public URL.
+        rm -rf dist/git/config dist/git/hooks dist/git/logs dist/git/index
+        touch dist/.nojekyll
+    - uses: actions/upload-pages-artifact@v3
+      with:
+        path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+    - id: deployment
+      uses: actions/deploy-pages@v4

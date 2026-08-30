@@ -1,93 +1,42 @@
-import { useState, type SyntheticEvent } from "react";
-
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import { useDocumentTitle } from "../hooks/useDocumentTitle.js";
 import { summaryPath } from "../paths.js";
-import {
-  addRecentRepo,
-  loadRecentRepos,
-  removeRecentRepo,
-} from "../utils/recentRepos.js";
+import { featuredRepos } from "../featuredRepos.js";
 
 export function StartPage() {
   useDocumentTitle("rgitweb");
-  const navigate = useNavigate();
-  const [url, setUrl] = useState("");
-  const [recents, setRecents] = useState(() => loadRecentRepos());
-
-  const openRepo = (repoUrl: string) => {
-    const trimmed = repoUrl.trim().replace(/\/+$/, "");
-    if (!trimmed) {
-      return;
-    }
-    addRecentRepo(trimmed);
-    void navigate(summaryPath(trimmed));
-  };
-
-  const handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    openRepo(url);
-  };
-
-  const handleForget = (repoUrl: string) => {
-    removeRecentRepo(repoUrl);
-    setRecents(loadRecentRepos());
-  };
 
   return (
     <div className="page start-page">
       <h1>rgitweb</h1>
       <p>
-        Browse a Git repository straight from a static, dumb-HTTP host — no
-        server-side logic involved. Point this at the base URL of a bare
-        repository that has been prepared with{" "}
-        <code>git update-server-info</code> and served with CORS enabled
-        (including{" "}
+        A fully static, client-side Git repository browser — no server-side
+        logic involved. It reads a repository's dumb-HTTP layout (
+        <code>info/refs</code>, loose objects, and pack files fetched with HTTP
+        Range requests) straight from the browser, so the host must serve it
+        over CORS (including{" "}
         <code>Access-Control-Expose-Headers: Accept-Ranges, Content-Range</code>
-        ).
+        ). Most Git hosts don't, which is why this page lists only repositories
+        configured for this deployment rather than taking an arbitrary URL.
       </p>
-      <form onSubmit={handleSubmit} className="repo-form">
-        <label htmlFor="repo-url">Repository URL</label>
-        <input
-          id="repo-url"
-          type="url"
-          required
-          placeholder="https://example.com/path/to/repo.git"
-          value={url}
-          onChange={(event) => {
-            setUrl(event.target.value);
-          }}
-        />
-        <button type="submit">Open</button>
-      </form>
-      {recents.length > 0 && (
+      {featuredRepos.length > 0 ? (
         <section>
-          <h2>Recent repositories</h2>
-          <ul className="recent-list">
-            {recents.map((entry) => (
-              <li key={entry.url}>
-                <Link
-                  to={summaryPath(entry.url)}
-                  onClick={() => {
-                    addRecentRepo(entry.url);
-                  }}
-                >
-                  {entry.url}
-                </Link>
-                <button
-                  type="button"
-                  className="link-button"
-                  onClick={() => {
-                    handleForget(entry.url);
-                  }}
-                >
-                  forget
-                </button>
+          <h2>Repositories</h2>
+          <ul className="featured-list">
+            {featuredRepos.map((repo) => (
+              <li key={repo.url}>
+                <Link to={summaryPath(repo.url)}>{repo.name}</Link>
               </li>
             ))}
           </ul>
         </section>
+      ) : (
+        <p>
+          No repositories are configured for this deployment. See{" "}
+          <code>src/ui/featuredRepos.ts</code> in the rgitweb source for how to
+          add one.
+        </p>
       )}
     </div>
   );
