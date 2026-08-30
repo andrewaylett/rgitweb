@@ -53,6 +53,29 @@ These are true of the implementation but not obvious from `types.ts`:
 - Raw tree objects store directory modes unpadded (`40000`); `git ls-tree`
   displays them padded (`040000`). `TreeEntry.mode` follows the raw format.
 
+## Start page
+
+The start page (`src/ui/pages/StartPage.tsx`) does not take an arbitrary
+repository URL — most Git hosts don't send the CORS headers this app needs,
+so a free-text box mostly produces CORS errors rather than a working demo.
+It lists only repositories from `src/ui/featuredRepos.ts`, which reads the
+`VITE_FEATURED_REPOS` build-time environment variable (a JSON array of
+`{"name", "url"}`) and falls back to an empty list. `.github/workflows/deploy.yml`
+sets this to point at a copy of this repository's own history, published
+alongside the site itself (see below).
+
+## Example deployment
+
+`.github/workflows/deploy.yml` builds the site and deploys it to GitHub
+Pages as a working demo of the project: it copies this repository's `.git`
+directory into the build output, runs `git update-server-info` on the copy,
+and strips `config`/`hooks`/`logs`/`index` (not read by the dumb-HTTP layer,
+and `config` would otherwise carry the checkout step's short-lived
+`GITHUB_TOKEN` credential onto a public URL — checkout uses
+`persist-credentials: false` for the same reason). The featured-repo list
+points at that copy, so the deployed site can browse its own source without
+depending on any third-party host's CORS configuration.
+
 ## Conventions
 
 - npm, ES modules only, strict TypeScript, no enums.

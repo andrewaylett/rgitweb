@@ -37,6 +37,27 @@ npm run build     # static site in dist/
 
 See `AGENTS.md` for architecture notes and conventions.
 
+## Featured repositories
+
+The start page lists only repositories configured at build time (see
+`src/ui/featuredRepos.ts`), rather than taking an arbitrary URL — most Git
+hosts don't send the CORS headers this app needs, so a free-text box mostly
+produces CORS errors. Set the `VITE_FEATURED_REPOS` environment variable to a
+JSON array of `{"name": "...", "url": "..."}` objects before building to
+populate it.
+
+## Example deployment
+
+`.github/workflows/deploy.yml` publishes this repository's own history to
+GitHub Pages as a demo: it builds the site, copies this repo's `.git`
+directory into the output, runs `git update-server-info` on the copy, and
+points the featured-repositories list at the result — so the deployed site
+can browse its own source.
+
+This requires the repository's Pages source to be set to "GitHub Actions"
+(repo Settings → Pages) before the first run; the workflow can't set that
+itself.
+
 ## License
 
 Apache-2.0

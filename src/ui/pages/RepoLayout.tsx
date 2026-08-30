@@ -11,7 +11,6 @@ import {
   treePath,
 } from "../paths.js";
 import { getRepository } from "../repoCache.js";
-import { addRecentRepo } from "../utils/recentRepos.js";
 import { type RepoOutletContext } from "../repoOutletContext.js";
 
 function defaultRevFromHead(
@@ -33,7 +32,6 @@ export function RepoLayout() {
   const state = useAsync(async () => {
     const repository = await getRepository(repoUrl);
     const head = await repository.head();
-    addRecentRepo(repoUrl);
     return {
       repository,
       defaultRev: defaultRevFromHead(head.symref, head.oid),
