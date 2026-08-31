@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+
+    - uses: jdx/mise-action@v2
+
+    - run: npm ci
+
+    - run: npm run lint
+
+    - run: npm run build
+
+    - run: npm test
+
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+
+    - uses: jdx/mise-action@v2
+
+    - run: npm ci
+
+    - uses: andrewaylett/pre-commit-action@5e72666f4a56f89ab37ada342c24f19386f07890 # v4
+      env:
+        SKIP: dedupe,lint,test

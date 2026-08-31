@@ -31,7 +31,7 @@ repos:
     exclude: ^(package-lock\.json|LICENSE)$
 - repo: local
   hooks:
-  - id: npm-dedupe
+  - id: dedupe
     name: npm dedupe
     entry: npm dedupe
     language: system
@@ -53,9 +53,14 @@ repos:
   rev: 0.33.2
   hooks:
   - id: check-renovate
+  - id: check-github-workflows
 - repo: https://github.com/renovatebot/pre-commit-hooks
   rev: 41.23.5
   hooks:
   - id: renovate-config-validator
     args:
     - --strict
+- repo: https://github.com/rhysd/actionlint
+  rev: v1.7.7
+  hooks:
+  - id: actionlint
