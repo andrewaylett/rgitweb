@@ -50,7 +50,7 @@ repos:
     pass_filenames: false
     files: \.(ts|tsx|js|jsx|mjs|json)$
 - repo: https://github.com/python-jsonschema/check-jsonschema
-  rev: 0.33.2
+  rev: 0.38.0
   hooks:
   - id: check-renovate
   - id: check-github-workflows
