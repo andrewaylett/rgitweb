@@ -34,6 +34,6 @@ jobs:
 
     - run: npm ci
 
-    - uses: andrewaylett/pre-commit-action@57a149d3daa51e633e2717e245fd508db4682461 # v4
+    - uses: andrewaylett/pre-commit-action@4a269e9a64a7af1fc8b7a162856a462ba3868870 # v4
       env:
         SKIP: dedupe,lint,test
