@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-import { treePath } from "../paths.js";
+import { repoDisplayName, treePath } from "../paths.js";
 
 export function Breadcrumbs({
   repoUrl,
@@ -14,7 +14,7 @@ export function Breadcrumbs({
   const segments = path.split("/").filter((segment) => segment.length > 0);
   return (
     <nav className="breadcrumbs" aria-label="Path">
-      <Link to={treePath(repoUrl, rev, "")}>root</Link>
+      <Link to={treePath(repoUrl, rev, "")}>{repoDisplayName(repoUrl)}</Link>
       {segments.map((segment, index) => {
         const segmentPath = segments.slice(0, index + 1).join("/");
         const isLast = index === segments.length - 1;
