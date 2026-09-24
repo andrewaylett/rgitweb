@@ -138,6 +138,13 @@ th {
   margin-bottom: 1.5rem;
 }
 
+.section-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
 .summary {
   max-width: 32rem;
   overflow: hidden;

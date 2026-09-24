@@ -72,14 +72,6 @@ export function CommitPage() {
       <table className="commit-meta">
         <tbody>
           <tr>
-            <th>tree</th>
-            <td>
-              <Link to={treePath(url, commit.oid, "")} className="oid">
-                {commit.tree}
-              </Link>
-            </td>
-          </tr>
-          <tr>
             <th>parent{commit.parents.length === 1 ? "" : "s"}</th>
             <td>
               {commit.parents.length === 0 ? (
@@ -114,7 +106,10 @@ export function CommitPage() {
         </tbody>
       </table>
       <pre className="commit-message">{commit.message}</pre>
-      <h2>Changes</h2>
+      <div className="section-heading">
+        <h2>Changes</h2>
+        <Link to={treePath(url, commit.oid)}>browse files →</Link>
+      </div>
       {isRoot && (
         <p className="hint">
           Root commit — showing diff against the empty tree.
