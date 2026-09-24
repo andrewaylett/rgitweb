@@ -4,6 +4,7 @@ import hljs from "highlight.js";
 import { useParams } from "react-router-dom";
 
 import { NotFoundError, type Repository } from "../../git/index.js";
+import { Breadcrumbs } from "../components/Breadcrumbs.js";
 import { ErrorPanel } from "../components/ErrorPanel.js";
 import { LoadingPanel } from "../components/LoadingPanel.js";
 import { useAsync } from "../hooks/useAsync.js";
@@ -133,7 +134,7 @@ export function BlobPage() {
 
   return (
     <div>
-      <h2>{path}</h2>
+      <Breadcrumbs repoUrl={url} rev={rev} path={path} />
       <p>
         {formatBytes(data.length)}
         {objectUrl && (
