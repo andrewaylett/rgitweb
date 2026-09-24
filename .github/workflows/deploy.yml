@@ -47,7 +47,7 @@ jobs:
     - name: Build site
       env:
         VITE_FEATURED_REPOS: >-
-          [{"name": "rgitweb (this site's own history)", "url": "${{ steps.repo-url.outputs.url }}/git"}]
+          [{"name": "rgitweb (this site's own history)", "url": "./git"}]
       run: npm run build
     - name: Publish this repository's history as a dumb-HTTP repo
       run: |
