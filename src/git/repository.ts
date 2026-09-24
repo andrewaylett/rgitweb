@@ -148,15 +148,25 @@ export function createRepositoryImpl(
   }
 
   async function pathEntry(
-    commitOid: Oid,
+    commitOrTreeOid: Oid,
     path: string,
   ): Promise<TreeEntry | undefined> {
-    const commit = await getCommit(commitOid);
+    const object = await getRawObject(commitOrTreeOid);
+    let oid;
+    if (object.type === "tree") {
+      oid = object.oid;
+    } else if (object.type === "commit") {
+      oid = parseCommit(object.oid, object.data).tree;
+    } else {
+      throw new Error(
+        `${commitOrTreeOid} is not a commit or tree (got ${object.type})`,
+      );
+    }
     if (path === "") {
       return {
         mode: "40000",
         name: "",
-        oid: commit.tree,
+        oid,
         isDirectory: true,
         isSymlink: false,
         isSubmodule: false,
@@ -164,7 +174,7 @@ export function createRepositoryImpl(
     }
 
     const parts = path.split("/").filter((p) => p.length > 0);
-    let currentTreeOid = commit.tree;
+    let currentTreeOid = oid;
     let entry: TreeEntry | undefined;
 
     for (const [i, part] of parts.entries()) {

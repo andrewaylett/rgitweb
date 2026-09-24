@@ -115,11 +115,11 @@ export interface Repository {
   log(start: Oid, options?: LogOptions): AsyncGenerator<Commit>;
 
   /**
-   * Resolve a slash-separated path within the tree of the given commit.
+   * Resolve a slash-separated path within the given commit or tree.
    * Returns undefined if the path does not exist. An empty path returns the
    * root tree as a synthetic directory entry.
    */
-  pathEntry(commitOid: Oid, path: string): Promise<TreeEntry | undefined>;
+  pathEntry(commitOrTreeOid: Oid, path: string): Promise<TreeEntry | undefined>;
 }
 
 export interface OpenOptions {
