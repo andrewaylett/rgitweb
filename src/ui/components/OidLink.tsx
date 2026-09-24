@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 import { commitPath } from "../paths.js";
 import { shortOid } from "../utils/format.js";
