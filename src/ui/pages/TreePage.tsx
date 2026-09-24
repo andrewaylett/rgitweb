@@ -9,6 +9,7 @@ import { Breadcrumbs } from "../components/Breadcrumbs.js";
 import { ErrorPanel } from "../components/ErrorPanel.js";
 import { LoadingPanel } from "../components/LoadingPanel.js";
 import { OidLink } from "../components/OidLink.js";
+import { Readme } from "../components/Readme.js";
 import { useAsync } from "../hooks/useAsync.js";
 import { useDocumentTitle } from "../hooks/useDocumentTitle.js";
 import {
@@ -28,6 +29,7 @@ interface TreeEntryWithTarget extends TreeEntry {
 interface TreeData {
   readonly commitOid: string;
   readonly commitMessage: string;
+  readonly treeOid: string;
   readonly entries: readonly TreeEntryWithTarget[];
 }
 
@@ -58,6 +60,7 @@ async function loadTree(
   return {
     commitOid,
     commitMessage: commit.message,
+    treeOid: entry.oid,
     entries: sortEntries(withTargets),
   };
 }
@@ -123,6 +126,7 @@ export function TreePage() {
         </tbody>
       </table>
       {state.data.entries.length === 0 && <p>Empty directory.</p>}
+      <Readme repository={repository} treeOid={state.data.treeOid} />
     </div>
   );
 }

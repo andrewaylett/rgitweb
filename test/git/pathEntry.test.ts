@@ -32,6 +32,20 @@ describe("Repository.pathEntry", () => {
     expect(entry?.oid).toBe(expectedOid);
   });
 
+  it("resolves a path from a tree oid", async () => {
+    const { repo, fixture } = await openFixtureRepository();
+    const headOid = runGit(["rev-parse", "HEAD"]);
+    const commit = await repo.getCommit(headOid);
+    const entry = await repo.pathEntry(commit.tree, fixture.subdirFilePath);
+    expect(entry).toBeDefined();
+    expect(entry?.isDirectory).toBe(false);
+    const expectedOid = runGit([
+      "rev-parse",
+      `${headOid}:${fixture.subdirFilePath}`,
+    ]);
+    expect(entry?.oid).toBe(expectedOid);
+  });
+
   it("resolves a nested directory path", async () => {
     const { repo, fixture } = await openFixtureRepository();
     const headOid = runGit(["rev-parse", "HEAD"]);

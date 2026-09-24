@@ -1,17 +1,15 @@
-import { lazy, Suspense } from "react";
-
 import { Link } from "react-router-dom";
 
 import { ErrorPanel } from "../components/ErrorPanel.js";
 import { LoadingPanel } from "../components/LoadingPanel.js";
 import { OidLink } from "../components/OidLink.js";
+import { Readme } from "../components/Readme.js";
 import { RefCommitRow } from "../components/RefCommitRow.js";
 import { RelativeDate } from "../components/RelativeDate.js";
 import { useAsync } from "../hooks/useAsync.js";
 import { useDocumentTitle } from "../hooks/useDocumentTitle.js";
 import { logPath, repoDisplayName } from "../paths.js";
 import { useRepo } from "../repoOutletContext.js";
-import { isBinary } from "../utils/binary.js";
 import { summaryLine } from "../utils/format.js";
 import {
   type Commit,
@@ -20,26 +18,23 @@ import {
   type Repository,
 } from "../../git/index.js";
 
-const ReactMarkdown = lazy(() => import("react-markdown"));
-
-const README_NAMES = ["README.md", "README", "README.txt"];
 const RECENT_COMMIT_COUNT = 10;
 
 interface SummaryData {
   readonly head: Head;
+  readonly headTreeOid: string;
   readonly refs: readonly Ref[];
   readonly commits: readonly Commit[];
-  readonly readme: { readonly name: string; readonly text: string } | undefined;
 }
 
 async function loadSummary(repository: Repository): Promise<SummaryData> {
   const head = await repository.head();
-  const [refs, commits, readme] = await Promise.all([
+  const [refs, commits] = await Promise.all([
     repository.refs(),
     collectCommits(repository, head.oid, RECENT_COMMIT_COUNT),
-    findReadme(repository, head.oid),
   ]);
-  return { head, refs, commits, readme };
+  const headCommit = await repository.getCommit(head.oid);
+  return { head, headTreeOid: headCommit.tree, refs, commits };
 }
 
 async function collectCommits(
@@ -57,23 +52,6 @@ async function collectCommits(
   return out;
 }
 
-async function findReadme(
-  repository: Repository,
-  commitOid: string,
-): Promise<{ name: string; text: string } | undefined> {
-  for (const name of README_NAMES) {
-    const entry = await repository.pathEntry(commitOid, name);
-    if (entry && !entry.isDirectory) {
-      const blob = await repository.getBlob(entry.oid);
-      if (isBinary(blob)) {
-        continue;
-      }
-      return { name, text: new TextDecoder().decode(blob) };
-    }
-  }
-  return undefined;
-}
-
 export function SummaryPage() {
   const { repository, url, defaultRev } = useRepo();
   useDocumentTitle(`${repoDisplayName(url)} — summary`);
@@ -86,7 +64,7 @@ export function SummaryPage() {
     return <ErrorPanel error={state.error} />;
   }
 
-  const { refs, commits, readme } = state.data;
+  const { refs, commits } = state.data;
   const branches = refs.filter((ref) => ref.name.startsWith("refs/heads/"));
   const tags = refs.filter((ref) => ref.name.startsWith("refs/tags/"));
 
@@ -146,18 +124,7 @@ export function SummaryPage() {
           <Link to={logPath(url, defaultRev)}>full log →</Link>
         </p>
       </section>
-      {readme && (
-        <section className="readme">
-          <h2>{readme.name}</h2>
-          {readme.name.toLowerCase().endsWith(".md") ? (
-            <Suspense fallback={<pre>{readme.text}</pre>}>
-              <ReactMarkdown>{readme.text}</ReactMarkdown>
-            </Suspense>
-          ) : (
-            <pre>{readme.text}</pre>
-          )}
-        </section>
-      )}
+      <Readme repository={repository} treeOid={state.data.headTreeOid} />
     </div>
   );
 }
