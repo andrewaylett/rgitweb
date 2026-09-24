@@ -69,6 +69,7 @@ export function CommitPage() {
   return (
     <div>
       <h2 className="oid">commit {commit.oid}</h2>
+      <pre className="commit-message">{commit.message}</pre>
       <table className="commit-meta">
         <tbody>
           <tr>
@@ -105,7 +106,6 @@ export function CommitPage() {
           </tr>
         </tbody>
       </table>
-      <pre className="commit-message">{commit.message}</pre>
       <div className="section-heading">
         <h2>Changes</h2>
         <Link to={treePath(url, commit.oid)}>browse files →</Link>
