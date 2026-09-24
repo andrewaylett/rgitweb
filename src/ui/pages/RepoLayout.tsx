@@ -61,14 +61,15 @@ export function RepoLayout() {
     url: repoUrl,
     defaultRev: state.data.defaultRev,
   };
-
   return (
     <div className="page repo-page">
       <header className="repo-header">
         <h1>
           <Link to={summaryPath(repoUrl)}>{repoDisplayName(repoUrl)}</Link>
         </h1>
-        <p className="repo-url">{repoUrl}</p>
+        <p className="repo-url">
+          {new URL(repoUrl, globalThis.location.href).href}
+        </p>
         <nav className="tabs">
           <NavLink to={summaryPath(repoUrl)} end>
             summary
