@@ -79,8 +79,7 @@ export function SummaryPage() {
                 key={ref.name}
                 repoUrl={url}
                 repository={repository}
-                name={ref.name.slice("refs/heads/".length)}
-                commitOid={ref.oid}
+                reference={ref}
               />
             ))}
           </tbody>
@@ -95,8 +94,7 @@ export function SummaryPage() {
                 key={ref.name}
                 repoUrl={url}
                 repository={repository}
-                name={ref.name.slice("refs/tags/".length)}
-                commitOid={ref.peeledOid ?? ref.oid}
+                reference={ref}
               />
             ))}
           </tbody>
