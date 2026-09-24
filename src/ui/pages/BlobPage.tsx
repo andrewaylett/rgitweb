@@ -1,11 +1,11 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 
-import hljs from "highlight.js";
 import { useParams } from "react-router-dom";
 
 import { NotFoundError, type Repository } from "../../git/index.js";
 import { Breadcrumbs } from "../components/Breadcrumbs.js";
 import { ErrorPanel } from "../components/ErrorPanel.js";
+import { HighlightedCode } from "../components/HighlightedCode.js";
 import { LoadingPanel } from "../components/LoadingPanel.js";
 import { useAsync } from "../hooks/useAsync.js";
 import { useDocumentTitle } from "../hooks/useDocumentTitle.js";
@@ -13,12 +13,10 @@ import { decodeSplatPath, repoDisplayName } from "../paths.js";
 import { useRepo } from "../repoOutletContext.js";
 import { isBinary } from "../utils/binary.js";
 import { formatBytes } from "../utils/format.js";
-import { guessLanguage, isMarkdown } from "../utils/languageMap.js";
+import { isMarkdown } from "../utils/languageMap.js";
 import { resolveCommitOid } from "../utils/resolveCommit.js";
 
 const ReactMarkdown = lazy(() => import("react-markdown"));
-
-const MAX_HIGHLIGHT_BYTES = 500 * 1024;
 
 interface BlobData {
   readonly path: string;
@@ -49,48 +47,6 @@ function useObjectUrl(bytes: Uint8Array | undefined): string | undefined {
     }
     return URL.createObjectURL(new Blob([new Uint8Array(bytes)]));
   }, [bytes]);
-}
-
-function HighlightedCode({
-  text,
-  filename,
-}: {
-  readonly text: string;
-  readonly filename: string;
-}) {
-  const language = guessLanguage(filename);
-  const highlighted = useMemo(() => {
-    if (text.length > MAX_HIGHLIGHT_BYTES) {
-      return;
-    }
-    try {
-      if (language && hljs.getLanguage(language)) {
-        return hljs.highlight(text, { language }).value;
-      }
-      return hljs.highlightAuto(text).value;
-    } catch {
-      return;
-    }
-  }, [text, language]);
-
-  const lineCount = text.length === 0 ? 1 : text.split("\n").length;
-  const html = highlighted ?? escapeHtml(text);
-
-  return (
-    <div className="code-block">
-      <pre className="line-numbers" aria-hidden="true">
-        {Array.from({ length: lineCount }, (_, index) => index + 1).join("\n")}
-      </pre>
-      <pre className="code hljs" dangerouslySetInnerHTML={{ __html: html }} />
-    </div>
-  );
-}
-
-function escapeHtml(text: string): string {
-  return text
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;");
 }
 
 export function BlobPage() {
