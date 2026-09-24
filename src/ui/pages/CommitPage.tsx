@@ -10,7 +10,7 @@ import { useDocumentTitle } from "../hooks/useDocumentTitle.js";
 import { repoDisplayName, treePath } from "../paths.js";
 import { useRepo } from "../repoOutletContext.js";
 import { diffTrees, type FileChange } from "../utils/treeDiff.js";
-import { shortOid } from "../utils/format.js";
+import { shortOid, summaryLine } from "../utils/format.js";
 import { resolveCommitOid } from "../utils/resolveCommit.js";
 import { type Commit, type Repository } from "../../git/index.js";
 
@@ -18,6 +18,7 @@ const AUTO_EXPAND_COUNT = 5;
 
 interface CommitData {
   readonly commit: Commit;
+  readonly parents: readonly Commit[];
   readonly changes: readonly FileChange[];
   readonly isRoot: boolean;
   readonly isMerge: boolean;
@@ -35,8 +36,11 @@ async function loadCommit(
   const parentTree = firstParentOid
     ? (await repository.getCommit(firstParentOid)).tree
     : undefined;
+  const parents = await Promise.all(
+    commit.parents.map((parentOid) => repository.getCommit(parentOid)),
+  );
   const changes = await diffTrees(repository, parentTree, commit.tree);
-  return { commit, changes, isRoot, isMerge };
+  return { commit, parents, changes, isRoot, isMerge };
 }
 
 export function CommitPage() {
@@ -60,7 +64,7 @@ export function CommitPage() {
     return <ErrorPanel error={state.error} />;
   }
 
-  const { commit, changes, isRoot, isMerge } = state.data;
+  const { commit, parents, changes, isRoot, isMerge } = state.data;
 
   return (
     <div>
@@ -85,10 +89,13 @@ export function CommitPage() {
                 <span className="hint">none (root commit)</span>
               ) : (
                 commit.parents.map((parentOid, index) => (
-                  <span key={parentOid}>
-                    {index > 0 && ", "}
+                  <div key={parentOid}>
                     <OidLink repoUrl={url} oid={parentOid} />
-                  </span>
+                    <span className="summary">
+                      {" "}
+                      {summaryLine(parents[index]?.message ?? "")}
+                    </span>
+                  </div>
                 ))
               )}
             </td>
