@@ -1,4 +1,4 @@
-import { HashRouter, Navigate, Route, Routes } from "react-router-dom";
+import { HashRouter, Navigate, Route, Routes } from "react-router";
 
 import { BlobPage } from "./pages/BlobPage.js";
 import { CommitPage } from "./pages/CommitPage.js";

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 import { useAsync } from "../hooks/useAsync.js";
 import { treePath } from "../paths.js";

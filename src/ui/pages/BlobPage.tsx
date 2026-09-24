@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 
-import { useParams } from "react-router-dom";
+import { useParams } from "react-router";
 
 import { NotFoundError, type Repository } from "../../git/index.js";
 import { Breadcrumbs } from "../components/Breadcrumbs.js";

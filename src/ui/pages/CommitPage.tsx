@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router";
 
 import { ErrorPanel } from "../components/ErrorPanel.js";
 import { FileDiff } from "../components/FileDiff.js";
