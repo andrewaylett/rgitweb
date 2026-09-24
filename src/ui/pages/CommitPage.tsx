@@ -68,12 +68,9 @@ export function CommitPage() {
 
   return (
     <div>
+      <h2 className="oid">commit {commit.oid}</h2>
       <table className="commit-meta">
         <tbody>
-          <tr>
-            <th>commit</th>
-            <td className="oid">{commit.oid}</td>
-          </tr>
           <tr>
             <th>tree</th>
             <td>
