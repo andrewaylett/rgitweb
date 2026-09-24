@@ -1,7 +1,10 @@
+import { Link } from "react-router-dom";
+
 import { useAsync } from "../hooks/useAsync.js";
+import { treePath } from "../paths.js";
 import { summaryLine } from "../utils/format.js";
 import { peelToCommit } from "../utils/resolveCommit.js";
-import { type Oid, type Repository } from "../../git/index.js";
+import { type Ref, type Repository } from "../../git/index.js";
 
 import { OidLink } from "./OidLink.js";
 import { RelativeDate } from "./RelativeDate.js";
@@ -14,25 +17,25 @@ import { RelativeDate } from "./RelativeDate.js";
 export function RefCommitRow({
   repoUrl,
   repository,
-  name,
-  commitOid,
+  reference,
 }: {
   readonly repoUrl: string;
   readonly repository: Repository;
-  readonly name: string;
-  /** A commit oid, or a (possibly annotated-tag) oid that peels to one. */
-  readonly commitOid: Oid;
+  readonly reference: Ref;
 }) {
+  const name = reference.name.replace(/^refs\/(?:heads|tags)\//, "");
   const state = useAsync(
     () =>
-      peelToCommit(repository, commitOid).then((oid) =>
+      peelToCommit(repository, reference.oid).then((oid) =>
         repository.getCommit(oid),
       ),
-    [repository, commitOid],
+    [repository, reference.oid],
   );
   return (
     <tr>
-      <td className="ref-name">{name}</td>
+      <td className="ref-name">
+        <Link to={treePath(repoUrl, reference.oid)}>{name}</Link>
+      </td>
       {state.status === "success" ? (
         <>
           <td>

@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 import { ErrorPanel } from "../components/ErrorPanel.js";
 import { LoadingPanel } from "../components/LoadingPanel.js";
 import { OidLink } from "../components/OidLink.js";
@@ -5,7 +7,7 @@ import { RefCommitRow } from "../components/RefCommitRow.js";
 import { RelativeDate } from "../components/RelativeDate.js";
 import { useAsync } from "../hooks/useAsync.js";
 import { useDocumentTitle } from "../hooks/useDocumentTitle.js";
-import { repoDisplayName } from "../paths.js";
+import { repoDisplayName, treePath } from "../paths.js";
 import { useRepo } from "../repoOutletContext.js";
 import {
   type AnnotatedTag,
@@ -22,7 +24,9 @@ function AnnotatedTagRow({
 }) {
   return (
     <tr>
-      <td className="ref-name">{tag.name}</td>
+      <td className="ref-name">
+        <Link to={treePath(repoUrl, tag.targetOid)}>{tag.name}</Link>
+      </td>
       <td>
         <OidLink repoUrl={repoUrl} oid={tag.targetOid} />
       </td>
@@ -53,8 +57,7 @@ function TagRow({
       <RefCommitRow
         repoUrl={repoUrl}
         repository={repository}
-        name={tagRef.name.slice("refs/tags/".length)}
-        commitOid={tagRef.oid}
+        reference={tagRef}
       />
     );
   }
@@ -97,8 +100,7 @@ export function RefsPage() {
                 key={ref.name}
                 repoUrl={url}
                 repository={repository}
-                name={ref.name.slice("refs/heads/".length)}
-                commitOid={ref.oid}
+                reference={ref}
               />
             ))}
           </tbody>
