@@ -8,6 +8,7 @@ import {
 import { Breadcrumbs } from "../components/Breadcrumbs.js";
 import { ErrorPanel } from "../components/ErrorPanel.js";
 import { LoadingPanel } from "../components/LoadingPanel.js";
+import { OidLink } from "../components/OidLink.js";
 import { useAsync } from "../hooks/useAsync.js";
 import { useDocumentTitle } from "../hooks/useDocumentTitle.js";
 import {
@@ -17,19 +18,26 @@ import {
   treePath,
 } from "../paths.js";
 import { useRepo } from "../repoOutletContext.js";
-import { shortOid } from "../utils/format.js";
+import { shortOid, summaryLine } from "../utils/format.js";
 import { resolveCommitOid } from "../utils/resolveCommit.js";
 
 interface TreeEntryWithTarget extends TreeEntry {
   readonly symlinkTarget?: string;
 }
 
+interface TreeData {
+  readonly commitOid: string;
+  readonly commitMessage: string;
+  readonly entries: readonly TreeEntryWithTarget[];
+}
+
 async function loadTree(
   repository: Repository,
   rev: string,
   path: string,
-): Promise<readonly TreeEntryWithTarget[]> {
+): Promise<TreeData> {
   const commitOid = await resolveCommitOid(repository, rev);
+  const commit = await repository.getCommit(commitOid);
   const entry = await repository.pathEntry(commitOid, path);
   if (!entry) {
     throw new NotFoundError(`"${path || "/"}" does not exist at ${rev}`);
@@ -47,7 +55,11 @@ async function loadTree(
       return { ...child, symlinkTarget: new TextDecoder().decode(blob) };
     }),
   );
-  return sortEntries(withTargets);
+  return {
+    commitOid,
+    commitMessage: commit.message,
+    entries: sortEntries(withTargets),
+  };
 }
 
 function sortEntries(
@@ -87,6 +99,10 @@ export function TreePage() {
   return (
     <div>
       <Breadcrumbs repoUrl={url} rev={rev} path={path} />
+      <p className="summary">
+        <OidLink repoUrl={url} oid={state.data.commitOid} />{" "}
+        {summaryLine(state.data.commitMessage)}
+      </p>
       <table className="tree-table">
         <thead>
           <tr>
@@ -95,7 +111,7 @@ export function TreePage() {
           </tr>
         </thead>
         <tbody>
-          {state.data.map((entry) => (
+          {state.data.entries.map((entry) => (
             <TreeRow
               key={entry.name}
               repoUrl={url}
@@ -106,7 +122,7 @@ export function TreePage() {
           ))}
         </tbody>
       </table>
-      {state.data.length === 0 && <p>Empty directory.</p>}
+      {state.data.entries.length === 0 && <p>Empty directory.</p>}
     </div>
   );
 }
