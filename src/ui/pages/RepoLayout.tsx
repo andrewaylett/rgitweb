@@ -68,7 +68,7 @@ export function RepoLayout() {
           <Link to={summaryPath(repoUrl)}>{repoDisplayName(repoUrl)}</Link>
         </h1>
         <p className="repo-url">
-          {new URL(repoUrl, globalThis.location.href).href}
+          git clone {new URL(repoUrl, globalThis.location.href).href}
         </p>
         <nav className="tabs">
           <NavLink to={summaryPath(repoUrl)} end>
