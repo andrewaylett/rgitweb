@@ -19,16 +19,16 @@ export default [
         tsconfigRootDir: import.meta.dirname,
       },
     },
-  },
-  {
-    // This project uses the automatic JSX runtime (tsconfig "jsx":
-    // "react-jsx"), so React need not be in scope for JSX.
-    files: ["src/**/*.tsx"],
     settings: {
       react: {
         version: "detect",
       },
     },
+  },
+  {
+    // This project uses the automatic JSX runtime (tsconfig "jsx":
+    // "react-jsx"), so React need not be in scope for JSX.
+    files: ["src/**/*.tsx"],
     rules: {
       "react/react-in-jsx-scope": "off",
     },
