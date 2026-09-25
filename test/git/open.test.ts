@@ -36,6 +36,13 @@ describe("openRepository", () => {
     expect(annotated?.peeledOid).toBeDefined();
   });
 
+  it("reads the gitweb project description", async () => {
+    const { repo } = await openFixtureRepository();
+    await expect(repo.description()).resolves.toBe(
+      "A repository for testing rgitweb.\n",
+    );
+  });
+
   it("throws RepositoryAccessError with a hint on a 404 (non-git) url", async () => {
     await buildFixtureRepo();
     const fetchImpl = createFileFetch("/nonexistent-path-for-test");

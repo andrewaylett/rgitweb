@@ -95,6 +95,8 @@ export interface Repository {
   head(): Promise<Head>;
   /** All refs advertised in info/refs plus any loose refs found. */
   refs(): Promise<readonly Ref[]>;
+  /** The plain-text project description from git/description. */
+  description(): Promise<string>;
 
   /**
    * Resolve a ref name (full or shorthand like "main" or "v1.0"), or a full

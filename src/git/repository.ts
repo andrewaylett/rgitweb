@@ -76,6 +76,10 @@ export function createRepositoryImpl(
     return packNamesPromise;
   }
 
+  function description(): Promise<string> {
+    return transport.fetchText(`${baseUrl}/description`);
+  }
+
   async function getRawObject(oid: Oid): Promise<GitObject> {
     const cached = cacheGet(oid);
     if (cached) {
@@ -275,6 +279,7 @@ export function createRepositoryImpl(
     url: baseUrl,
     head: getHead,
     refs: getRefs,
+    description,
     resolve,
     getObject: getRawObject,
     getCommit,
