@@ -101,7 +101,7 @@ export function TreePage() {
 
   return (
     <div>
-      <Breadcrumbs repoUrl={url} rev={rev} path={path} />
+      {path && <Breadcrumbs repoUrl={url} rev={rev} path={path} />}
       <p className="summary">
         <OidLink repoUrl={url} oid={state.data.commitOid} />{" "}
         {summaryLine(state.data.commitMessage)}
