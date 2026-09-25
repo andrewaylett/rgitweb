@@ -14,6 +14,7 @@ import { summaryLine } from "../utils/format.js";
 import {
   type Commit,
   type Head,
+  NotFoundError,
   type Ref,
   type Repository,
 } from "../../git/index.js";
@@ -25,7 +26,13 @@ interface SummaryData {
   readonly headTreeOid: string;
   readonly refs: readonly Ref[];
   readonly commits: readonly Commit[];
+  readonly description: string | undefined;
 }
+
+const DEFAULT_DESCRIPTIONS = new Set([
+  "Unnamed repository; edit this file to name it for gitweb.",
+  "Unnamed repository; edit this file 'description' to name the repository.",
+]);
 
 async function loadSummary(repository: Repository): Promise<SummaryData> {
   const head = await repository.head();
@@ -34,7 +41,19 @@ async function loadSummary(repository: Repository): Promise<SummaryData> {
     collectCommits(repository, head.oid, RECENT_COMMIT_COUNT),
   ]);
   const headCommit = await repository.getCommit(head.oid);
-  return { head, headTreeOid: headCommit.tree, refs, commits };
+  let description: string | undefined;
+  try {
+    const text = await repository.description();
+    const firstLine = text.trim().split(/\r?\n/, 1)[0] ?? "";
+    if (firstLine && !DEFAULT_DESCRIPTIONS.has(firstLine)) {
+      description = firstLine;
+    }
+  } catch (error) {
+    if (!(error instanceof NotFoundError)) {
+      throw error;
+    }
+  }
+  return { head, headTreeOid: headCommit.tree, refs, commits, description };
 }
 
 async function collectCommits(
@@ -70,6 +89,7 @@ export function SummaryPage() {
 
   return (
     <div>
+      {state.data.description && <p>{state.data.description}</p>}
       <section>
         <h2>Branches</h2>
         <table className="ref-table">

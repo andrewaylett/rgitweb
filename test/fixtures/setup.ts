@@ -187,6 +187,11 @@ function buildFixtureRepoSync(): void {
     env: { ...process.env, GIT_DIR: REPO_DIR, GIT_WORK_TREE: WORK_DIR },
   });
 
+  writeFileSync(
+    join(REPO_DIR, "description"),
+    "A repository for testing rgitweb.\n",
+  );
+
   write("README.md", "Hello from the rgitweb test fixture.\n");
   write(CHANGED_FILE_PATH, "# Changelog\n\n## 0.1\n\nInitial release.\n");
   commit("Initial commit");
