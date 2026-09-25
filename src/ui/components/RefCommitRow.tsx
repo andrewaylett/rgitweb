@@ -1,5 +1,3 @@
-import { type ReactNode } from "react";
-
 import { useAsync } from "../hooks/useAsync.js";
 import { summaryLine } from "../utils/format.js";
 import { peelToCommit } from "../utils/resolveCommit.js";
@@ -17,14 +15,11 @@ export function RefCommitRow({
   repoUrl,
   repository,
   name,
-  nameElement,
   commitOid,
 }: {
   readonly repoUrl: string;
   readonly repository: Repository;
   readonly name: string;
-  /** Optional pre-rendered label, defaults to plain `name`. */
-  readonly nameElement?: ReactNode;
   /** A commit oid, or a (possibly annotated-tag) oid that peels to one. */
   readonly commitOid: Oid;
 }) {
@@ -37,7 +32,7 @@ export function RefCommitRow({
   );
   return (
     <tr>
-      <td className="ref-name">{nameElement ?? name}</td>
+      <td className="ref-name">{name}</td>
       {state.status === "success" ? (
         <>
           <td>
