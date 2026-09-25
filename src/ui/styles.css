@@ -145,6 +145,10 @@ th {
   gap: 1rem;
 }
 
+.section-heading .summary {
+  margin: 0;
+}
+
 .summary {
   max-width: 32rem;
   overflow: hidden;
