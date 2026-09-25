@@ -15,6 +15,7 @@ import { useDocumentTitle } from "../hooks/useDocumentTitle.js";
 import {
   blobPath,
   decodeSplatPath,
+  logPath,
   repoDisplayName,
   treePath,
 } from "../paths.js";
@@ -102,10 +103,15 @@ export function TreePage() {
   return (
     <div>
       {path && <Breadcrumbs repoUrl={url} rev={rev} path={path} />}
-      <p className="summary">
-        <OidLink repoUrl={url} oid={state.data.commitOid} />{" "}
-        {summaryLine(state.data.commitMessage)}
-      </p>
+      <div className="section-heading">
+        <p className="summary">
+          <OidLink repoUrl={url} oid={state.data.commitOid} />{" "}
+          {summaryLine(state.data.commitMessage)}
+        </p>
+        <Link to={logPath(url, rev, { path: path || undefined })}>
+          view log →
+        </Link>
+      </div>
       <table className="tree-table">
         <thead>
           <tr>
