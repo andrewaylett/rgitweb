@@ -6,20 +6,22 @@ import { type Repository } from "../../git/index.js";
 
 const ReactMarkdown = lazy(() => import("react-markdown"));
 
-const README_NAMES = ["README.md", "README", "README.txt"];
+const README_NAMES = ["readme.md", "readme", "readme.txt"];
 
 export async function findReadme(
   repository: Repository,
   treeOid: string,
 ): Promise<{ name: string; text: string } | undefined> {
-  for (const name of README_NAMES) {
-    const entry = await repository.pathEntry(treeOid, name);
-    if (entry && !entry.isDirectory) {
-      const blob = await repository.getBlob(entry.oid);
-      if (isBinary(blob)) {
-        continue;
+  const entries = await repository.getTree(treeOid);
+  for (const readmeName of README_NAMES) {
+    for (const entry of entries) {
+      if (!entry.isDirectory && entry.name.toLowerCase() === readmeName) {
+        const blob = await repository.getBlob(entry.oid);
+        if (isBinary(blob)) {
+          continue;
+        }
+        return { name: entry.name, text: new TextDecoder().decode(blob) };
       }
-      return { name, text: new TextDecoder().decode(blob) };
     }
   }
   return undefined;
