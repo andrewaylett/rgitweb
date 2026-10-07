@@ -34,7 +34,7 @@
     "eslint-config-andrewaylett": "7.0.0",
     "jest": "30.5.1",
     "prettier": "3.9.9",
-    "ts-jest": "29.4.12",
+    "ts-jest": "29.4.14",
     "typescript": "6.0.3",
     "vite": "8.2.2"
   }
