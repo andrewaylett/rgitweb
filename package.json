@@ -24,7 +24,7 @@
     "react-router": "^7.18.3"
   },
   "devDependencies": {
-    "@jest/globals": "30.5.1",
+    "@jest/globals": "30.5.2",
     "@types/jest": "30.0.0",
     "@types/pako": "2.0.4",
     "@types/react": "19.2.18",
@@ -32,7 +32,7 @@
     "@vitejs/plugin-react": "6.1.1",
     "eslint": "9.39.5",
     "eslint-config-andrewaylett": "7.0.0",
-    "jest": "30.5.1",
+    "jest": "30.5.2",
     "prettier": "3.9.9",
     "ts-jest": "29.4.14",
     "typescript": "6.0.3",
