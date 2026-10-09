@@ -30,7 +30,7 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "6.1.2",
-    "eslint": "9.39.5",
+    "eslint": "10.12.0",
     "eslint-config-andrewaylett": "7.0.0",
     "jest": "30.5.2",
     "prettier": "3.9.9",
